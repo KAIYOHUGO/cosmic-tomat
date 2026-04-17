@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Cosmic Tomat
+Comment=Tomat applet for cosmic
+Type=Application
+Icon=uk.k9h.cosmic-tomat
+Exec=cosmic-tomat %F
+Terminal=false
+StartupNotify=true
+Categories=COSMIC
+Keywords=COSMIC
+NoDisplay=true
+X-CosmicApplet=true
+X-CosmicHoverPopup=Auto
+MimeType=

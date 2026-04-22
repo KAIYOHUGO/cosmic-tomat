@@ -1,13 +1,16 @@
-# Cosmic Tomat
-
 <div align="center">
 
-🍅 Tomat applet for cosmic
+# 🍅 Tomat applet for cosmic
 
 ![logo](./resources/icon.svg)
+
 by Sofia Moya under PD.
 
-`Left click: Toggle timer pause/resume` `Right click: Skip to next phase` `Middle click: Start new session`
+---
+
+`Left click: Toggle timer pause/resume`
+`Right click: Skip to next phase`
+`Middle click: Start new session`
 
 ![example](./imgs/example.png)
 

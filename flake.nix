@@ -18,33 +18,18 @@
           pkgs,
           ...
         }:
-        let
-          dlopenLibraries = with pkgs; [
-            libxkbcommon
-
-            # GPU backend
-            vulkan-loader
-            # libGL
-
-            # Window system
-            wayland
-            # xorg.libX11
-            # xorg.libXcursor
-            # xorg.libXi
-          ];
-        in
         {
           devShells.default =
             with pkgs;
             mkShell {
               nativeBuildInputs = [
+                libcosmicAppHook
+                libxkbcommon
                 rustc
-                rustfmt
                 cargo
-                pkg-config
+                rustfmt
                 just
               ];
-              RUSTFLAGS = "-C link-arg=-Wl,-rpath,${nixpkgs.lib.makeLibraryPath dlopenLibraries}";
             };
           packages.default = pkgs.callPackage (
             {

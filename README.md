@@ -1,8 +1,47 @@
 # Cosmic Tomat
 
-Tomat applet for cosmic
+<div align="center">
+
+🍅 Tomat applet for cosmic
+
+![example](./imgs/example.png)
+
+- Left click: Toggle timer pause/resume
+- Right click: Skip to next phase
+- Middle click: Start new session
+
+</div>
 
 ## Installation
+
+### Nix
+
+Add `cosmic-tomat` to  flake inputs.
+
+```nix
+{
+  inputs = {
+    // ...
+    cosmic-tomat= {
+      url = "github:kaiyohugo/cosmic-tomat";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  }
+  // ...
+}
+```
+
+And install `tomat` and `cosmic-tomat`
+
+```nix
+environment.systemPackages = [
+  pkgs.tomat
+  inputs.cosmic-tomat.packages."<system>".default
+];
+
+```
+
+### Other
 
 A [justfile](./justfile) is included by default for the [casey/just][just] command runner.
 
@@ -13,6 +52,11 @@ A [justfile](./justfile) is included by default for the [casey/just][just] comma
 - `just build-vendored` compiles with vendored dependencies from that tarball
 - `just check` runs clippy on the project to check for linter warnings
 - `just check-json` can be used by IDEs that support LSP
+
+## Config
+
+You can change the width of applet add a file at `~/.config/cosmic/uk.k9h.cosmic-tomat/v1/width`,
+with the number inside. The default is `120`.
 
 ## Translators
 

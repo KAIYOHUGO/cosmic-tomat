@@ -7,11 +7,9 @@ use std::sync::LazyLock;
 use std::time::Duration;
 
 use crate::config::Config;
-use crate::fl;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::Length;
-use cosmic::iced::platform_specific::shell::commands::popup::{destroy_popup, get_popup};
-use cosmic::iced::{Limits, Subscription, window::Id};
+use cosmic::iced::{Subscription, window::Id};
 use cosmic::widget::{self, mouse_area};
 use cosmic::{Action, prelude::*};
 use futures_util::StreamExt;
@@ -28,8 +26,7 @@ static AUTOSIZE_MAIN_ID: LazyLock<widget::Id> = LazyLock::new(|| widget::Id::new
 pub struct AppModel {
     /// Application state which is managed by the COSMIC runtime.
     core: cosmic::Core,
-    /// The popup id.
-    popup: Option<Id>,
+
     /// Configuration data that persists between application runs.
     config: Config,
 
@@ -43,12 +40,11 @@ pub struct AppModel {
 /// Messages emitted by the application and its widgets.
 #[derive(Debug, Clone)]
 pub enum Message {
-    TogglePopup,
-    PopupClosed(Id),
     UpdateConfig(Config),
     TomatWatch(TomatWatch),
     ToggleTomat,
     SkipTomat,
+    StartTomat,
 }
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -126,8 +122,8 @@ impl cosmic::Application for AppModel {
         (app, Task::none())
     }
 
-    fn on_close_requested(&self, id: Id) -> Option<Message> {
-        Some(Message::PopupClosed(id))
+    fn on_close_requested(&self, _id: Id) -> Option<Message> {
+        None
     }
 
     /// Describes the interface based on the current state of the application model.
@@ -144,11 +140,13 @@ impl cosmic::Application for AppModel {
                         self.core.applet.text(self.tomat.text.as_str()),
                         Message::ToggleTomat,
                     )
-                    .height(self.core.applet.suggested_size(false).1),
+                    .height(self.core.applet.suggested_size(false).1)
+                    .padding([0, self.core.applet.suggested_padding(true).0]),
             )
-            .on_right_press(Message::SkipTomat),
+            .on_right_press(Message::SkipTomat)
+            .on_middle_press(Message::StartTomat),
         )
-        .center_x(Length::Fixed(120.0));
+        .center_x(Length::Fixed(self.config.width as f32));
 
         widget::autosize::autosize(con, AUTOSIZE_MAIN_ID.clone()).into()
     }
@@ -157,12 +155,7 @@ impl cosmic::Application for AppModel {
     /// multiple poups, you may match the id parameter to determine which popup to
     /// create a view for.
     fn view_window(&self, _id: Id) -> Element<'_, Self::Message> {
-        let content_list = widget::list_column().add(widget::settings::item(
-            fl!("example-row"),
-            widget::text("Hello world"),
-        ));
-
-        self.core.applet.popup_container(content_list).into()
+        unreachable!()
     }
 
     /// Register subscriptions for this application.
@@ -206,32 +199,6 @@ impl cosmic::Application for AppModel {
             Message::UpdateConfig(config) => {
                 self.config = config;
             }
-            Message::TogglePopup => {
-                return if let Some(p) = self.popup.take() {
-                    destroy_popup(p)
-                } else {
-                    let new_id = Id::unique();
-                    self.popup.replace(new_id);
-                    let mut popup_settings = self.core.applet.get_popup_settings(
-                        self.core.main_window_id().unwrap(),
-                        new_id,
-                        None,
-                        None,
-                        None,
-                    );
-                    popup_settings.positioner.size_limits = Limits::NONE
-                        .max_width(372.0)
-                        .min_width(300.0)
-                        .min_height(200.0)
-                        .max_height(1080.0);
-                    get_popup(popup_settings)
-                };
-            }
-            Message::PopupClosed(id) => {
-                if self.popup.as_ref() == Some(&id) {
-                    self.popup = None;
-                }
-            }
             Message::TomatWatch(tomat_watch) => self.tomat = tomat_watch,
             Message::ToggleTomat => {
                 let _ = std::process::Command::new("tomat")
@@ -242,6 +209,12 @@ impl cosmic::Application for AppModel {
             Message::SkipTomat => {
                 let _ = std::process::Command::new("tomat")
                     .arg("skip")
+                    .spawn()
+                    .unwrap();
+            }
+            Message::StartTomat => {
+                let _ = std::process::Command::new("tomat")
+                    .arg("start")
                     .spawn()
                     .unwrap();
             }

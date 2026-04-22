@@ -4,11 +4,12 @@
 
 🍅 Tomat applet for cosmic
 
-![example](./imgs/example.png)
+![logo](./resources/icon.svg)
+by Sofia Moya under PD.
 
-- Left click: Toggle timer pause/resume
-- Right click: Skip to next phase
-- Middle click: Start new session
+`Left click: Toggle timer pause/resume` `Right click: Skip to next phase` `Middle click: Start new session`
+
+![example](./imgs/example.png)
 
 </div>
 
